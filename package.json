@@ -1,27 +1,32 @@
 {
-  "name": "terablock-contracts",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nonceblox/terablock-contracts.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/nonceblox/terablock-contracts/issues"
-  },
-  "homepage": "https://github.com/nonceblox/terablock-contracts#readme",
-  "devDependencies": {
-    "@openzeppelin/contracts": "^4.2.0",
-    "husky": "^7.0.1",
-    "lint-staged": "^11.1.1",
-    "prettier": "^2.3.2",
-    "truffle": "^5.4.3"
-  }
+    "name": "terablock-contracts",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prepare": "husky install"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nonceblox/terablock-contracts.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/nonceblox/terablock-contracts/issues"
+    },
+    "homepage": "https://github.com/nonceblox/terablock-contracts#readme",
+    "devDependencies": {
+        "@openzeppelin/contracts": "^4.2.0",
+        "husky": "^7.0.1",
+        "lint-staged": "^11.1.1",
+        "prettier": "^2.3.2",
+        "prettier-plugin-solidity": "^1.0.0-beta.17",
+        "truffle": "^5.4.3"
+    },
+    "lint-staged": {
+        "*.{js,json,sol}": "prettier --write"
+    }
 }
