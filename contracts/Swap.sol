@@ -1,14 +1,21 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+/**
+    @title Contract for swapping `oldToken` to `newToken`
+
+    @dev Requirements: 
+
+    - contract should hold the `newTokens` to be distributed
+ */
 contract Swap {
     IERC20 public oldToken;
     IERC20 public newToken;
     address private owner;
 
-    constructor(IERC20 _oldToken, IERC20 _newToken) {
+    constructor(IERC20 _oldToken, IERC20 _newToken) public {
         require(
             _oldToken != _newToken && address(_oldToken) != address(0) && address(_newToken) != address(0),
             "wrong token addresses"
