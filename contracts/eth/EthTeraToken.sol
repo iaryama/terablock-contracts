@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../utils/AccessProtected.sol";
 
 // Tera Token
-contract PolygonTeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
+contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
     struct BurntTokens {
         uint256 currentBurntTokens;
         uint256 totalBurntTokens;
