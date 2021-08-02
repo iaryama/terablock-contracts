@@ -17,16 +17,13 @@ contract("Swap contract tests", async (accounts) => {
         assert.equal(await swap.oldToken(), oldToken.address)
         assert.equal(await swap.newToken(), newToken.address)
     })
-    it("throws on deploying with incorrect token addresses", async () => {
-        await truffleAssert.reverts(Swap.new(oldToken.address, oldToken.address), "wrong token addresses")
-        const ZERO_ADDRESS = "0x".padEnd(42, "0")
-        await truffleAssert.reverts(Swap.new(oldToken.address, ZERO_ADDRESS), "wrong token addresses")
-    })
     it("swaps", async () => {
         assert.equal(await oldToken.balanceOf(accounts[0]), 1000)
         assert.equal(await newToken.balanceOf(accounts[0]), 0)
         assert.equal(await newToken.balanceOf(swap.address), 1000)
+        // swap
         await swap.swapTokens(1000)
+        //
         assert.equal(await newToken.balanceOf(accounts[0]), 1000)
         assert.equal(await newToken.balanceOf(swap.address), 0)
     })
@@ -35,5 +32,24 @@ contract("Swap contract tests", async (accounts) => {
         assert.equal(await oldToken.balanceOf(accounts[0]), 0)
         await swap.withdrawTokens()
         assert.equal(await oldToken.balanceOf(accounts[0]), 1000)
+    })
+    describe("Error testing", async () => {
+        it("throws on deploying with incorrect token addresses", async () => {
+            await truffleAssert.reverts(Swap.new(oldToken.address, oldToken.address), "wrong token addresses")
+            const ZERO_ADDRESS = "0x".padEnd(42, "0")
+            await truffleAssert.reverts(Swap.new(oldToken.address, ZERO_ADDRESS), "wrong token addresses")
+        })
+        it("throws if insufficient oldToken balance of user", async () => {
+            await truffleAssert.reverts(swap.swapTokens(1001), "ERC20: transfer amount exceeds balance")
+        })
+        it("throws if insufficient newTokens in the contract", async () => {
+            // reverts because contract doesn't hold enough `newTokens`
+            await truffleAssert.reverts(swap.swapTokens(1001), "ERC20: transfer amount exceeds balance")
+        })
+
+        it("throws if non-owner tries to withdraw", async () => {
+            await swap.swapTokens(1000)
+            await truffleAssert.reverts(swap.withdrawTokens({ from: accounts[1] }), "only owner")
+        })
     })
 })
