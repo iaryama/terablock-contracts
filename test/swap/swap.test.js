@@ -45,6 +45,7 @@ contract("Swap contract tests", async (accounts) => {
         it("throws if insufficient newTokens in the contract", async () => {
             // mint extra 1000 tokens so new balance 2000
             await oldToken.mint(accounts[0], 1000)
+            await oldToken.approve(swap.address, 2000)
             // reverts because contract holds only 1000 `newTokens`
             await truffleAssert.reverts(swap.swapTokens(1001), "ERC20: transfer amount exceeds balance")
         })
