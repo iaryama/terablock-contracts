@@ -10,11 +10,11 @@ contract TeraLock is AccessProtected {
     struct Tokens {
         bool isLocked;
         uint256 tokensLocked;
-        uint256 currentTokensToBeReleasedOntoPolygon;
+        uint256 currentTokensToBeReleasedOntoEth;
         uint256 tokensReleased;
     }
     mapping(address => Tokens) private tokens;
-    event TokenLocked(address _userAddress, uint256 _tokensLocked, uint256 _currentTokensToBeReleasedOntoPolygon);
+    event TokenLocked(address _userAddress, uint256 _tokensLocked, uint256 _currentTokensToBeReleasedOntoEth);
     event TokenReleased(address _userAddress, uint256 _tokensReleased, uint256 _currentReleasedTokens);
 
     constructor(TeraToken teraToken) public {
@@ -29,7 +29,7 @@ contract TeraLock is AccessProtected {
         );
         _teraToken.transferFrom(msg.sender, address(this), amount);
         tokens[msg.sender].tokensLocked += amount;
-        tokens[msg.sender].currentTokensToBeReleasedOntoPolygon = amount;
+        tokens[msg.sender].currentTokensToBeReleasedOntoEth = amount;
         tokens[msg.sender].isLocked = true;
         uint256 tokensLocked = tokens[msg.sender].tokensLocked;
         emit TokenLocked(msg.sender, tokensLocked, amount);
@@ -38,9 +38,9 @@ contract TeraLock is AccessProtected {
 
     function releaseTokens(address userAddress) external onlyAdmin returns (bool _isSuccess) {
         require(tokens[userAddress].isLocked == true, "Tokens are not locked to be released");
-        tokens[userAddress].tokensReleased += tokens[userAddress].currentTokensToBeReleasedOntoPolygon;
-        uint256 currentTokensReleased = tokens[userAddress].currentTokensToBeReleasedOntoPolygon;
-        tokens[userAddress].currentTokensToBeReleasedOntoPolygon = 0;
+        tokens[userAddress].tokensReleased += tokens[userAddress].currentTokensToBeReleasedOntoEth;
+        uint256 currentTokensReleased = tokens[userAddress].currentTokensToBeReleasedOntoEth;
+        tokens[userAddress].currentTokensToBeReleasedOntoEth = 0;
         tokens[userAddress].isLocked = false;
         uint256 tokensReleased = tokens[userAddress].tokensReleased;
         emit TokenReleased(userAddress, tokensReleased, currentTokensReleased);
@@ -60,14 +60,14 @@ contract TeraLock is AccessProtected {
         returns (
             uint256 _tokensLocked,
             uint256 _tokensReleased,
-            uint256 _currentTokensToBeReleasedOntoPolygon,
+            uint256 _currentTokensToBeReleasedOntoEth,
             bool _isLocked
         )
     {
         return (
             tokens[userAddress].tokensLocked,
             tokens[userAddress].tokensReleased,
-            tokens[userAddress].currentTokensToBeReleasedOntoPolygon,
+            tokens[userAddress].currentTokensToBeReleasedOntoEth,
             tokens[userAddress].isLocked
         );
     }

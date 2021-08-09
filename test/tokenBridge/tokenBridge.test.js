@@ -1,10 +1,10 @@
 var TeraToken = artifacts.require("TeraToken")
-var PolygonTeraToken = artifacts.require("PolygonTeraToken")
+var EthTeraToken = artifacts.require("EthTeraToken")
 var TeraLock = artifacts.require("TeraLock")
 const truffleAssert = require("truffle-assertions")
 contract("TeraToken", function (accounts) {
     before(async () => {
-        polygon_tera_token = await PolygonTeraToken.new({ from: accounts[0] })
+        eth_tera_token = await EthTeraToken.new({ from: accounts[0] })
         tera_token = await TeraToken.new({ from: accounts[0] })
         tera_lock = await TeraLock.new(tera_token.address, { from: accounts[0] })
         tera_lock_address = tera_lock.address
@@ -58,19 +58,19 @@ contract("TeraToken", function (accounts) {
         })
     })
 
-    describe("PolygonTeraToken Mint and Burn Tests", async () => {
+    describe("EthTeraToken Mint and Burn Tests", async () => {
         it("should be able to mint new tokens", async function () {
-            await truffleAssert.passes(polygon_tera_token.mint(accounts[1], 1000000))
+            await truffleAssert.passes(eth_tera_token.mint(accounts[1], 1000000))
         })
         it("should be able to burn tokens", async function () {
             await truffleAssert.passes(
-                polygon_tera_token.transferTokensToBSC(1000000, {
+                eth_tera_token.transferTokensToBSC(1000000, {
                     from: accounts[1],
                 })
             )
         })
         it("admin should be able to update releasedTokens Onto BSC mapping", async function () {
-            await truffleAssert.passes(polygon_tera_token.releasedTokensToBSC(accounts[1]))
+            await truffleAssert.passes(eth_tera_token.releasedTokensToBSC(accounts[1]))
         })
     })
 
@@ -94,10 +94,10 @@ contract("TeraToken", function (accounts) {
                 from: accounts[0],
             })
             truffleAssert.eventEmitted(receipt, "TokenLocked", (ev) => {
-                return ev._currentTokensToBeReleasedOntoPolygon == 100 && ev._userAddress == accounts[0]
+                return ev._currentTokensToBeReleasedOntoEth == 100 && ev._userAddress == accounts[0]
             })
         })
-        it("non-admins shouldn't release tokens onto polygon", async () => {
+        it("non-admins shouldn't release tokens onto eth", async () => {
             truffleAssert.reverts(
                 tera_lock.releaseTokens(accounts[0], {
                     from: accounts[1],
@@ -105,7 +105,7 @@ contract("TeraToken", function (accounts) {
                 "Caller does not have Admin Access"
             )
         })
-        it("admins should release tokens onto polygon", async () => {
+        it("admins should release tokens onto eth", async () => {
             const receipt = await tera_lock.releaseTokens(accounts[0], {
                 from: accounts[0],
             })
