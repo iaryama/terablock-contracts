@@ -6,7 +6,7 @@ module.exports = async function (deployer, network, accounts) {
     if (network == "bsc_testnet" || network == "bsc_mainnet") {
         await deployer.deploy(TeraToken)
         await deployer.deploy(TeraLock, TeraToken.address)
-    } else if (network == "rinkeby" || network == "mainnet") {
+    } else if (network == "rinkeby_testnet" || network == "ethereum_mainnet") {
         await deployer.deploy(EthTeraToken)
     } else if (network == "development") {
         await deployer.deploy(TeraToken)

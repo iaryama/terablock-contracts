@@ -26,7 +26,7 @@ module.exports = {
                 }),
             network_id: "80001",
         },
-        mainnet: {
+        ethereum_mainnet: {
             provider: () =>
                 new HDWalletProvider({
                     privateKeys: [process.env.PRIVATE_KEY],
@@ -35,7 +35,7 @@ module.exports = {
                 }),
             network_id: "1",
         },
-        rinkeby: {
+        rinkeby_testnet: {
             provider: () => {
                 new HDWalletProvider({
                     privateKeys: [process.env.PRIVATE_KEY],
@@ -56,5 +56,10 @@ module.exports = {
         solc: {
             version: "0.6.12",
         },
+    },
+    plugins: ["truffle-plugin-verify"],
+    api_keys: {
+        etherscan: "MY_API_KEY",
+        bscscan: "MY_API_KEY",
     },
 }

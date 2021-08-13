@@ -49,3 +49,35 @@ cp .example.env .env
 ```sh
 npm test
 ```
+
+## Deploy smart contracts
+
+### on Ganche
+
+```sh
+npm run deploy:ganache
+```
+
+### on BSC Testnet
+
+```sh
+npm run deploy:bsc_testnet
+```
+
+### on BSC Mainnet
+
+```sh
+npm run deploy:bsc_mainnet
+```
+
+### on Rinkeby Testnet
+
+```sh
+npm run deploy:rinkeby_testnet
+```
+
+### on Ethereum Mainnet
+
+```sh
+npm run deploy:ethereum_mainnet
+```
