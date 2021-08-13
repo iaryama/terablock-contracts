@@ -3,7 +3,7 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "../utils/AccessProtected.sol";
+import "../../utils/AccessProtected.sol";
 
 // Tera Token
 contract TeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
