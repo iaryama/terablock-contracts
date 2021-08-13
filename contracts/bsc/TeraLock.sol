@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.6.12;
-import "../test/TeraToken.sol";
+import "../test/bsc/TeraToken.sol";
 import "../utils/AccessProtected.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // Tera Lock
-contract TeraLock is AccessProtected {
+contract TeraLock is AccessProtected, ReentrancyGuard {
     TeraToken private _teraToken;
     struct Tokens {
         bool isLocked;
@@ -21,7 +22,7 @@ contract TeraLock is AccessProtected {
         _teraToken = teraToken;
     }
 
-    function lockTokens(uint256 amount) external returns (bool _isSuccess) {
+    function lockTokens(uint256 amount) external nonReentrant returns (bool _isSuccess) {
         require(tokens[msg.sender].isLocked == false, "The user already has tokens locked");
         require(
             _teraToken.allowance(msg.sender, address(this)) == amount,
