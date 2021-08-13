@@ -52,7 +52,10 @@ contract("Swap contract tests", async (accounts) => {
 
         it("throws if non-owner tries to withdraw", async () => {
             await swap.swapTokens(1000)
-            await truffleAssert.reverts(swap.withdrawTokens({ from: accounts[1] }), "only owner")
+            await truffleAssert.reverts(
+                swap.withdrawTokens({ from: accounts[1] }),
+                "Ownable: caller is not the owner"
+            )
         })
     })
 })

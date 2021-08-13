@@ -2,6 +2,7 @@
 pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
     @title Contract for swapping `oldToken` to `newToken`
@@ -10,10 +11,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
     - contract should hold the `newTokens` to be distributed
  */
-contract Swap {
+contract Swap is Ownable {
     IERC20 public oldToken;
     IERC20 public newToken;
-    address private owner;
 
     constructor(IERC20 _oldToken, IERC20 _newToken) public {
         require(
@@ -22,7 +22,6 @@ contract Swap {
         );
         oldToken = _oldToken;
         newToken = _newToken;
-        owner = msg.sender;
     }
 
     /// Swap `oldToken` with `newToken`
@@ -33,8 +32,7 @@ contract Swap {
     }
 
     /// Withdraw old tokens accumulated in this contract
-    function withdrawTokens() external {
-        require(msg.sender == owner, "only owner");
-        oldToken.transfer(owner, oldToken.balanceOf(address(this)));
+    function withdrawTokens() external onlyOwner {
+        oldToken.transfer(owner(), oldToken.balanceOf(address(this)));
     }
 }

@@ -1,11 +1,18 @@
-var ERC20New = artifacts.require("ERC20New")
-var ERC20Old = artifacts.require("ERC20Old")
-const Swap = artifacts.require("Swap")
+var TeraToken = artifacts.require("TeraToken")
+var TeraLock = artifacts.require("TeraLock")
+var EthTeraToken = artifacts.require("EthTeraToken")
+
 module.exports = async function (deployer, network, accounts) {
-    await deployer.deploy(ERC20New)
-    await deployer.deploy(ERC20Old)
-    await deployer.deploy(Swap, ERC20Old.address, ERC20New.address)
-    await deployer.deploy(TeraToken)
-    await deployer.deploy(TeraLock, TeraToken.address)
-    await deployer.deploy(EthTeraToken)
+    if (network == "bsc_testnet" || network == "bsc_mainnet") {
+        await deployer.deploy(TeraToken)
+        await deployer.deploy(TeraLock, TeraToken.address)
+    } else if (network == "rinkeby" || network == "mainnet") {
+        await deployer.deploy(EthTeraToken)
+    } else if (network == "development") {
+        await deployer.deploy(TeraToken)
+        await deployer.deploy(TeraLock, TeraToken.address)
+        await deployer.deploy(EthTeraToken)
+    } else {
+        return
+    }
 }

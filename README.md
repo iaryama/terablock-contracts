@@ -49,29 +49,3 @@ cp .example.env .env
 ```sh
 npm test
 ```
-
-## Deploy smart contracts
-
-### on Ganche
-
-```sh
-npm run deploy:ganache
-```
-
-### on Mumbai Testnet
-
-```sh
-npm run deploy:mumbai_testnet
-```
-
-### on Polygon Mainnet
-
-```sh
-npm run deploy:polygon_mainnet
-```
-
-## Generate Types
-
-```sh
-npm run generate:types
-```
