@@ -4,10 +4,9 @@ pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../utils/AccessProtected.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // Tera Token
-contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected, ReentrancyGuard {
+contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
     struct BurntTokens {
         uint256 currentBurntTokens;
         uint256 totalBurntTokens;
@@ -19,7 +18,7 @@ contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected, ReentrancyG
         _mint(to, amount);
     }
 
-    function transferTokensToBSC(uint256 amount) external nonReentrant returns (bool) {
+    function transferTokensToBSC(uint256 amount) external returns (bool) {
         require(amount != 0, "Cant Transfer 0 tokens");
         require(burntTokens[_msgSender()].isBurnt == false, "Tokens are already Burnt.");
         _burn(_msgSender(), amount);
