@@ -1,6 +1,7 @@
 var TeraToken = artifacts.require("TeraToken")
 var EthTeraToken = artifacts.require("EthTeraToken")
 var TeraLock = artifacts.require("TeraLock")
+var ERC20Old = artifacts.require("ERC20Old")
 const truffleAssert = require("truffle-assertions")
 contract("TeraToken", function (accounts) {
     before(async () => {
@@ -8,6 +9,7 @@ contract("TeraToken", function (accounts) {
         tera_token = await TeraToken.new({ from: accounts[0] })
         tera_lock = await TeraLock.new(tera_token.address, { from: accounts[0] })
         tera_lock_address = tera_lock.address
+        oldToken = await ERC20Old.new()
     })
 
     describe("TeraToken Contract Tests", async () => {
@@ -137,6 +139,13 @@ contract("TeraToken", function (accounts) {
                 }),
                 "Caller does not have Admin Access"
             )
+        })
+        it("withdraws any tokens from contract", async () => {
+            //mint
+            await truffleAssert.passes(oldToken.mint(eth_tera_token.address, 1000))
+            assert.equal(await oldToken.balanceOf(accounts[0]), 0)
+            await truffleAssert.passes(eth_tera_token.withdrawTokens(oldToken.address))
+            assert.equal(await oldToken.balanceOf(accounts[0]), 1000)
         })
     })
 })

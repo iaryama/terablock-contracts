@@ -36,14 +36,15 @@ module.exports = {
             network_id: "1",
         },
         rinkeby_testnet: {
-            provider: () => {
+            provider: () =>
                 new HDWalletProvider({
                     privateKeys: [process.env.PRIVATE_KEY],
                     providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
                     addressIndex: 0,
-                })
-            },
+                }),
             network_id: "4",
+            networkCheckTimeout: 2000000,
+            timeoutBlocks: 200,
         },
     },
     solc: {
@@ -59,7 +60,7 @@ module.exports = {
     },
     plugins: ["truffle-plugin-verify"],
     api_keys: {
-        etherscan: "MY_API_KEY",
+        etherscan: "66G55FZP3P12NBT6BBR5U5ADCVX53QRGZP",
         bscscan: "MY_API_KEY",
     },
 }

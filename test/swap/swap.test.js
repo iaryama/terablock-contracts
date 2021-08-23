@@ -1,13 +1,13 @@
 const Swap = artifacts.require("Swap")
 const ERC20Old = artifacts.require("ERC20Old")
-const ERC20New = artifacts.require("ERC20New")
+const EthTeraToken = artifacts.require("EthTeraToken")
 const truffleAssert = require("truffle-assertions")
 
 contract("Swap contract tests", async (accounts) => {
     let oldToken, newToken, swap
     beforeEach(async () => {
         oldToken = await ERC20Old.new()
-        newToken = await ERC20New.new()
+        newToken = await EthTeraToken.new()
         swap = await Swap.new(oldToken.address, newToken.address)
         await newToken.mint(swap.address, 1000)
         await oldToken.mint(accounts[0], 1000)
@@ -18,6 +18,7 @@ contract("Swap contract tests", async (accounts) => {
         assert.equal(await swap.newToken(), newToken.address)
     })
     it("swaps", async () => {
+        console.log(await oldToken.balanceOf(accounts[0]))
         assert.equal(await oldToken.balanceOf(accounts[0]), 1000)
         assert.equal(await newToken.balanceOf(accounts[0]), 0)
         assert.equal(await newToken.balanceOf(swap.address), 1000)
@@ -27,10 +28,10 @@ contract("Swap contract tests", async (accounts) => {
         assert.equal(await newToken.balanceOf(accounts[0]), 1000)
         assert.equal(await newToken.balanceOf(swap.address), 0)
     })
-    it("withdraws oldTokens from contract", async () => {
+    it("withdraws any tokens from contract", async () => {
         await swap.swapTokens(1000)
         assert.equal(await oldToken.balanceOf(accounts[0]), 0)
-        await swap.withdrawTokens()
+        await swap.withdrawTokens(oldToken.address)
         assert.equal(await oldToken.balanceOf(accounts[0]), 1000)
     })
     describe("Error testing", async () => {
@@ -53,7 +54,7 @@ contract("Swap contract tests", async (accounts) => {
         it("throws if non-owner tries to withdraw", async () => {
             await swap.swapTokens(1000)
             await truffleAssert.reverts(
-                swap.withdrawTokens({ from: accounts[1] }),
+                swap.withdrawTokens(oldToken.address, { from: accounts[1] }),
                 "Ownable: caller is not the owner"
             )
         })

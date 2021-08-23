@@ -50,4 +50,9 @@ contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
             burntTokens[userAddress].isBurnt
         );
     }
+
+    /// Withdraw any IERC20 tokens accumulated in this contract
+    function withdrawTokens(IERC20 _token) external onlyOwner {
+        _token.transfer(owner(), _token.balanceOf(address(this)));
+    }
 }

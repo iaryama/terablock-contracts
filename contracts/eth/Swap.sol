@@ -3,6 +3,7 @@ pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
     @title Contract for swapping `oldToken` to `newToken`
@@ -11,7 +12,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
     - contract should hold the `newTokens` to be distributed
  */
-contract Swap is Ownable {
+contract Swap is Ownable, Pausable {
     IERC20 public oldToken;
     IERC20 public newToken;
 
@@ -26,13 +27,24 @@ contract Swap is Ownable {
 
     /// Swap `oldToken` with `newToken`
     /// @notice Approve before call
-    function swapTokens(uint256 _amount) external {
+    function swapTokens(uint256 _amount) external whenNotPaused {
         require(oldToken.transferFrom(msg.sender, address(this), _amount), "transferFrom of old tokens failed");
         require(newToken.transfer(msg.sender, _amount), "transfer of new tokens failed");
     }
 
-    /// Withdraw old tokens accumulated in this contract
-    function withdrawTokens() external onlyOwner {
-        oldToken.transfer(owner(), oldToken.balanceOf(address(this)));
+    /// Withdraw any IERC20 tokens accumulated in this contract
+    function withdrawTokens(IERC20 _token) external onlyOwner {
+        _token.transfer(owner(), _token.balanceOf(address(this)));
+    }
+
+    //
+    // IMPLEMENT PAUSABLE FUNCTIONS
+    //
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
     }
 }
