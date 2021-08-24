@@ -30,7 +30,7 @@ contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
 
     function releasedTokensToBSC(address userAddress) external onlyAdmin returns (bool) {
         burntTokens[userAddress].isBurnt = false;
-        burntTokens[_msgSender()].currentBurntTokens = 0;
+        burntTokens[userAddress].currentBurntTokens = 0;
         return true;
     }
 
