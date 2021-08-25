@@ -1,6 +1,6 @@
 var TeraToken = artifacts.require("TeraToken")
 var TeraLock = artifacts.require("TeraLock")
-var EthTeraToken = artifacts.require("EthTeraToken")
+var EthTeraToken = artifacts.require("TeraBlockToken")
 
 module.exports = async function (deployer, network, accounts) {
     if (network == "bsc_testnet" || network == "bsc_mainnet") {

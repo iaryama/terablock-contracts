@@ -1,13 +1,13 @@
 const Swap = artifacts.require("Swap")
 const ERC20Old = artifacts.require("ERC20Old")
-const EthTeraToken = artifacts.require("EthTeraToken")
+const TeraBlockToken = artifacts.require("TeraBlockToken")
 const truffleAssert = require("truffle-assertions")
 
 contract("Swap contract tests", async (accounts) => {
     let oldToken, newToken, swap
     beforeEach(async () => {
         oldToken = await ERC20Old.new()
-        newToken = await EthTeraToken.new()
+        newToken = await TeraBlockToken.new()
         swap = await Swap.new(oldToken.address, newToken.address)
         await newToken.mint(swap.address, 1000)
         await oldToken.mint(accounts[0], 1000)
@@ -18,7 +18,6 @@ contract("Swap contract tests", async (accounts) => {
         assert.equal(await swap.newToken(), newToken.address)
     })
     it("swaps", async () => {
-        console.log(await oldToken.balanceOf(accounts[0]))
         assert.equal(await oldToken.balanceOf(accounts[0]), 1000)
         assert.equal(await newToken.balanceOf(accounts[0]), 0)
         assert.equal(await newToken.balanceOf(swap.address), 1000)

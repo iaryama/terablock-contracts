@@ -1,4 +1,4 @@
-var EthTeraToken = artifacts.require("EthTeraToken")
+var EthTeraToken = artifacts.require("TeraBlockToken")
 var ERC20Old = artifacts.require("ERC20Old")
 const Swap = artifacts.require("Swap")
 module.exports = async function (deployer, network, accounts) {

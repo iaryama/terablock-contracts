@@ -3,10 +3,11 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "../utils/AccessProtected.sol";
 
 // Tera Token
-contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
+contract TeraBlockToken is ERC20("TeraBlock Token", "TBC"), AccessProtected, Pausable {
     struct BurntTokens {
         uint256 currentBurntTokens;
         uint256 totalBurntTokens;
@@ -14,11 +15,11 @@ contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
     }
     mapping(address => BurntTokens) private burntTokens;
 
-    function mint(address to, uint256 amount) external onlyAdmin {
+    function mint(address to, uint256 amount) external whenNotPaused onlyOwner {
         _mint(to, amount);
     }
 
-    function transferTokensToBSC(uint256 amount) external returns (bool) {
+    function transferTokensToBSC(uint256 amount) external whenNotPaused returns (bool) {
         require(amount != 0, "Cant Transfer 0 tokens");
         require(burntTokens[_msgSender()].isBurnt == false, "Tokens are already Burnt.");
         _burn(_msgSender(), amount);
@@ -28,7 +29,7 @@ contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
         return true;
     }
 
-    function releasedTokensToBSC(address userAddress) external onlyAdmin returns (bool) {
+    function releasedTokensToBSC(address userAddress) external whenNotPaused onlyAdmin returns (bool) {
         burntTokens[userAddress].isBurnt = false;
         burntTokens[userAddress].currentBurntTokens = 0;
         return true;
@@ -52,7 +53,18 @@ contract EthTeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
     }
 
     /// Withdraw any IERC20 tokens accumulated in this contract
-    function withdrawTokens(IERC20 _token) external onlyOwner {
+    function withdrawTokens(IERC20 _token) external whenNotPaused onlyOwner {
         _token.transfer(owner(), _token.balanceOf(address(this)));
+    }
+
+    //
+    // IMPLEMENT PAUSABLE FUNCTIONS
+    //
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
     }
 }
