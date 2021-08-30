@@ -33,7 +33,7 @@ contract Swap is Ownable, Pausable {
     }
 
     /// Withdraw any IERC20 tokens accumulated in this contract
-    function withdrawTokens(IERC20 _token) external whenNotPaused onlyOwner {
+    function withdrawTokens(IERC20 _token) external onlyOwner {
         _token.transfer(owner(), _token.balanceOf(address(this)));
     }
 

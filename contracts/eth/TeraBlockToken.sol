@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "../utils/AccessProtected.sol";
 
-// Tera Token
+// Tera Block Token
 contract TeraBlockToken is ERC20("TeraBlock Token", "TBC"), AccessProtected, Pausable {
     struct BurntTokens {
         uint256 currentBurntTokens;
@@ -15,7 +15,7 @@ contract TeraBlockToken is ERC20("TeraBlock Token", "TBC"), AccessProtected, Pau
     }
     mapping(address => BurntTokens) private burntTokens;
 
-    function mint(address to, uint256 amount) external whenNotPaused onlyOwner {
+    function mint(address to, uint256 amount) external whenNotPaused onlyAdmin {
         _mint(to, amount);
     }
 
@@ -53,7 +53,7 @@ contract TeraBlockToken is ERC20("TeraBlock Token", "TBC"), AccessProtected, Pau
     }
 
     /// Withdraw any IERC20 tokens accumulated in this contract
-    function withdrawTokens(IERC20 _token) external whenNotPaused onlyOwner {
+    function withdrawTokens(IERC20 _token) external onlyOwner {
         _token.transfer(owner(), _token.balanceOf(address(this)));
     }
 
