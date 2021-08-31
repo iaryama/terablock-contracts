@@ -15,6 +15,8 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
 contract Swap is Ownable, Pausable {
     IERC20 public oldToken;
     IERC20 public newToken;
+
+    // this address is used for superficial burning of tokens, we'll transfer oldTokens here
     address public constant zeroDead = 0x000000000000000000000000000000000000dEaD;
 
     constructor(IERC20 _oldToken, IERC20 _newToken) public {

@@ -27,13 +27,15 @@ contract("Swap contract tests", async (accounts) => {
         assert.equal(await newToken.balanceOf(accounts[0]), 1000)
         assert.equal(await newToken.balanceOf(swap.address), 0)
     })
-    it("withdraws any tokens from contract", async () => {
+    it("burns old tokens during the swap", async () => {
         await swap.swapTokens(1000)
+        assert.equal(await oldToken.balanceOf(swap.address), 0)
+    })
+    it("withdraws any stuck IERC20 tokens from contract", async () => {
+        await oldToken.transfer(swap.address, 1000) // tokens stuck in contract
         assert.equal(await oldToken.balanceOf(accounts[0]), 0)
-        await newToken.transfer(swap.address, 100)
-        assert.equal(await newToken.balanceOf(accounts[0]), 900)
-        await swap.withdrawTokens(newToken.address)
-        assert.equal(await newToken.balanceOf(accounts[0]), 1000)
+        await swap.withdrawTokens(oldToken.address) // tokens withdrawn
+        assert.equal(await oldToken.balanceOf(accounts[0]), 1000)
     })
     describe("Error testing", async () => {
         it("throws on deploying with incorrect token addresses", async () => {
@@ -51,13 +53,21 @@ contract("Swap contract tests", async (accounts) => {
             // reverts because contract holds only 1000 `newTokens`
             await truffleAssert.reverts(swap.swapTokens(1001), "ERC20: transfer amount exceeds balance")
         })
-
         it("throws if non-owner tries to withdraw", async () => {
-            await swap.swapTokens(1000)
+            await oldToken.transfer(swap.address, 1000) // tokens stuck in contract
+            assert.equal(await oldToken.balanceOf(accounts[0]), 0)
             await truffleAssert.reverts(
                 swap.withdrawTokens(oldToken.address, { from: accounts[1] }),
                 "Ownable: caller is not the owner"
-            )
+            ) // tokens withdrawn
+        })
+        it("throws if non owner tries to pause", async () => {
+            await truffleAssert.reverts(swap.pause({ from: accounts[1] }), "Ownable: caller is not the owner")
+            await swap.pause() // works with owner only
+        })
+        it("throws if attempting to swap when `paused`", async () => {
+            await swap.pause()
+            await truffleAssert.reverts(swap.swapTokens(1000), "Pausable: paused")
         })
     })
 })
