@@ -30,8 +30,10 @@ contract("Swap contract tests", async (accounts) => {
     it("withdraws any tokens from contract", async () => {
         await swap.swapTokens(1000)
         assert.equal(await oldToken.balanceOf(accounts[0]), 0)
-        await swap.withdrawTokens(oldToken.address)
-        assert.equal(await oldToken.balanceOf(accounts[0]), 1000)
+        await newToken.transfer(swap.address, 100)
+        assert.equal(await newToken.balanceOf(accounts[0]), 900)
+        await swap.withdrawTokens(newToken.address)
+        assert.equal(await newToken.balanceOf(accounts[0]), 1000)
     })
     describe("Error testing", async () => {
         it("throws on deploying with incorrect token addresses", async () => {

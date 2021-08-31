@@ -15,6 +15,7 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
 contract Swap is Ownable, Pausable {
     IERC20 public oldToken;
     IERC20 public newToken;
+    address public constant zeroDead = 0x000000000000000000000000000000000000dEaD;
 
     constructor(IERC20 _oldToken, IERC20 _newToken) public {
         require(
@@ -28,7 +29,7 @@ contract Swap is Ownable, Pausable {
     /// Swap `oldToken` with `newToken`
     /// @notice Approve before call
     function swapTokens(uint256 _amount) external whenNotPaused {
-        require(oldToken.transferFrom(msg.sender, address(this), _amount), "transferFrom of old tokens failed");
+        require(oldToken.transferFrom(msg.sender, zeroDead, _amount), "transferFrom of old tokens failed");
         require(newToken.transfer(msg.sender, _amount), "transfer of new tokens failed");
     }
 
