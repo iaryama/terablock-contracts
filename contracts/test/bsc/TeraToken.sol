@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../../utils/AccessProtected.sol";
 
 // Tera Block Token
-contract TeraToken is ERC20("TeraToken", "TRA"), AccessProtected {
+contract TeraBlockToken is ERC20("TeraBlock Token", "TBC"), AccessProtected {
     address public depositAdmin;
 
     constructor(address _depositAdmin) public {
