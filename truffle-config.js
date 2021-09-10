@@ -16,6 +16,7 @@ module.exports = {
                     addressIndex: 0,
                 }),
             network_id: "97",
+            skipDryRun: true,
         },
         bsc_mainnet: {
             provider: () =>
@@ -25,6 +26,7 @@ module.exports = {
                     addressIndex: 0,
                 }),
             network_id: "80001",
+            skipDryRun: true,
         },
         ethereum_mainnet: {
             provider: () =>
@@ -34,6 +36,7 @@ module.exports = {
                     addressIndex: 0,
                 }),
             network_id: "1",
+            skipDryRun: true,
         },
         rinkeby_testnet: {
             provider: () =>
@@ -43,6 +46,7 @@ module.exports = {
                     addressIndex: 0,
                 }),
             network_id: "4",
+            skipDryRun: true,
             networkCheckTimeout: 2000000,
             timeoutBlocks: 200,
         },
