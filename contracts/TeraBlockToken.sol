@@ -3,16 +3,12 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "../../utils/AccessProtected.sol";
+import "./utils/AccessProtected.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 
 // Tera Block Token
 contract TeraBlockToken is ERC20("TeraBlock Token", "TBC"), AccessProtected, Pausable {
     address public depositAdmin;
-
-    constructor(address _depositAdmin) public {
-        depositAdmin = _depositAdmin;
-    }
 
     function mint(address to, uint256 amount) external onlyAdmin whenNotPaused {
         _mint(to, amount);
