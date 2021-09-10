@@ -24,13 +24,17 @@ contract TeraBlockToken is ERC20("TeraBlock Token", "TBC"), AccessProtected, Pau
         _mint(user, amount);
     }
 
-    function setDepositAdmin(address _newDepositAdmin) external onlyAdmin whenNotPaused {
-        depositAdmin = _newDepositAdmin;
+    function setDepositAdmin(address _depositAdmin) external onlyAdmin whenNotPaused {
+        depositAdmin = _depositAdmin;
     }
 
     /// Withdraw any IERC20 tokens accumulated in this contract
     function withdrawTokens(IERC20 _token) external onlyOwner {
         _token.transfer(owner(), _token.balanceOf(address(this)));
+    }
+
+    function getOwner() external view returns (address) {
+        return owner();
     }
 
     //
