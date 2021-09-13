@@ -86,7 +86,7 @@ contract("TeraBlock Token", function (accounts) {
         })
         it("Burn Tokens", async () => {
             //burn
-            await truffleAssert.passes(tera_block_token.withdraw(500000, { from: accounts[1] }))
+            await truffleAssert.passes(tera_block_token.burn(500000, { from: accounts[1] }))
             assert.equal(await tera_block_token.totalSupply(), 1500000)
         })
     })

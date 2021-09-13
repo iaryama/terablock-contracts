@@ -14,7 +14,7 @@ contract TeraBlockToken is ERC20("TeraBlock Token", "TBC"), AccessProtected, Pau
         _mint(to, amount);
     }
 
-    function withdraw(uint256 _amount) external whenNotPaused {
+    function burn(uint256 _amount) external whenNotPaused {
         _burn(_msgSender(), _amount);
     }
 
