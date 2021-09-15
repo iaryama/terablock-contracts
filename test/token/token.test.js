@@ -1,10 +1,12 @@
 var TeraBlockToken = artifacts.require("TeraBlockToken")
 var ERC20Old = artifacts.require("ERC20Old")
+var TeraBlockBridge = artifacts.require("TeraBlockBridge")
 const truffleAssert = require("truffle-assertions")
 contract("TeraBlock Token", function (accounts) {
     before(async () => {
         tera_block_token = await TeraBlockToken.new({ from: accounts[0] })
-        depositedData = web3.eth.abi.encodeParameter("uint256", "1000000")
+        tera_block_bridge = await TeraBlockBridge.new(tera_block_token.address, { from: accounts[0] })
+        //depositedData = web3.eth.abi.encodeParameter("uint256", "1000000")
         // used to test withdrawal of any erc20 token on `tera_block_token`
         oldToken = await ERC20Old.new()
     })
@@ -70,18 +72,18 @@ contract("TeraBlock Token", function (accounts) {
             assert.equal(await oldToken.balanceOf(accounts[0]), 1000)
         })
         it("Set Deposit Admin", async () => {
-            await truffleAssert.passes(tera_block_token.setDepositAdmin(accounts[2]))
+            await truffleAssert.passes(tera_block_token.setDepositAdmin(tera_block_bridge.address))
         })
-        it("Deposit Tokens on the Contract by Deposit Admin", async () => {
+        it("Deposit Tokens from the Bridge by Deposit Admin", async () => {
             //deposit
-            await truffleAssert.passes(
-                tera_block_token.deposit(accounts[1], depositedData, { from: accounts[2] })
-            )
+            await truffleAssert.passes(tera_block_bridge.deposit(accounts[1], 1000000, { from: accounts[0] }))
             assert.equal(await tera_block_token.totalSupply(), 2000000)
         })
         it("Non Deposit Admin should not Deposit Tokens on the Contract", async () => {
             //deposit
-            await truffleAssert.reverts(tera_block_token.deposit(accounts[1], depositedData))
+            await truffleAssert.reverts(
+                tera_block_bridge.deposit(accounts[1], 1000000, { from: accounts[2] })
+            )
             assert.equal(await tera_block_token.totalSupply(), 2000000)
         })
         it("Burn Tokens", async () => {
