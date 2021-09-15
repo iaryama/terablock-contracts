@@ -90,7 +90,12 @@ contract("TeraBlock Token", function (accounts) {
             await truffleAssert.passes(tera_block_token.burn(500000, { from: accounts[1] }))
             assert.equal(await tera_block_token.totalSupply(), 1500000)
         })
-
+        it("throws if non owner tries to pause", async () => {
+            await truffleAssert.reverts(
+                tera_block_bridge.pause({ from: accounts[1] }),
+                "Ownable: caller is not the owner"
+            )
+        })
         it("throws if attempting to deposit when `paused`", async () => {
             await tera_block_bridge.pause()
             await truffleAssert.reverts(
