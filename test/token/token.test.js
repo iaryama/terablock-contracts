@@ -6,7 +6,6 @@ contract("TeraBlock Token", function (accounts) {
     before(async () => {
         tera_block_token = await TeraBlockToken.new({ from: accounts[0] })
         tera_block_bridge = await TeraBlockBridge.new(tera_block_token.address, { from: accounts[0] })
-        //depositedData = web3.eth.abi.encodeParameter("uint256", "1000000")
         // used to test withdrawal of any erc20 token on `tera_block_token`
         oldToken = await ERC20Old.new()
     })
