@@ -4,6 +4,7 @@ pragma solidity 0.6.12;
 
 import "./utils/AccessProtected.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 interface ITeraBlockToken {
     /**
@@ -13,14 +14,14 @@ interface ITeraBlockToken {
 }
 
 // Tera Block Bridge
-contract TeraBlockBridge is AccessProtected, Pausable {
+contract TeraBlockBridge is AccessProtected, Pausable, ReentrancyGuard {
     ITeraBlockToken token;
 
     constructor(ITeraBlockToken _token) public {
         token = _token;
     }
 
-    function deposit(address user, uint256 amount) external onlyAdmin whenNotPaused {
+    function deposit(address user, uint256 amount) external onlyAdmin nonReentrant whenNotPaused {
         bytes memory depositData = new bytes(32);
         assembly {
             mstore(add(depositData, 32), amount)
