@@ -90,5 +90,13 @@ contract("TeraBlock Token", function (accounts) {
             await truffleAssert.passes(tera_block_token.burn(500000, { from: accounts[1] }))
             assert.equal(await tera_block_token.totalSupply(), 1500000)
         })
+
+        it("throws if attempting to deposit when `paused`", async () => {
+            await tera_block_bridge.pause()
+            await truffleAssert.reverts(
+                tera_block_bridge.deposit(accounts[1], 1000000, { from: accounts[0] }),
+                "Pausable: paused"
+            )
+        })
     })
 })
