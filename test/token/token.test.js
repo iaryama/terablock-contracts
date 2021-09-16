@@ -76,6 +76,7 @@ contract("TeraBlock Token", function (accounts) {
         it("Deposit Tokens from the Bridge by Deposit Admin", async () => {
             //deposit
             await truffleAssert.passes(tera_block_bridge.deposit(accounts[1], 1000000, { from: accounts[0] }))
+            assert.equal(await tera_block_token.balanceOf(accounts[1]), 1500000)
             assert.equal(await tera_block_token.totalSupply(), 2000000)
         })
         it("Non Deposit Admin should not Deposit Tokens on the Contract", async () => {
