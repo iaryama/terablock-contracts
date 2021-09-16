@@ -22,10 +22,7 @@ contract TeraBlockBridge is AccessProtected, Pausable, ReentrancyGuard {
     }
 
     function deposit(address user, uint256 amount) external onlyAdmin nonReentrant whenNotPaused {
-        bytes memory depositData = new bytes(32);
-        assembly {
-            mstore(add(depositData, 32), amount)
-        }
+        bytes memory depositData = abi.encodePacked(amount);
         token.deposit(user, depositData);
     }
 
