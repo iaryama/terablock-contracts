@@ -25,7 +25,7 @@ module.exports = {
                     providerOrUrl: "https://bsc-dataseed.binance.org/",
                     addressIndex: 0,
                 }),
-            network_id: "80001",
+            network_id: "56",
             skipDryRun: true,
         },
         ethereum_mainnet: {
