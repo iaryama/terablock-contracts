@@ -20,7 +20,7 @@ contract TeraBlockBridge is Pausable, ReentrancyGuard, ContextMixin, NativeMetaT
     ITeraBlockToken token;
 
     constructor(ITeraBlockToken _token) public {
-        _initializeEIP712("TeraBlockBridge");
+        _initializeEIP712("TeraBlockBridge", "1");
         token = _token;
     }
 
