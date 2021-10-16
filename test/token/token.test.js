@@ -7,6 +7,7 @@ const web3Abi = require("web3-eth-abi")
 const sigUtil = require("eth-sig-util")
 const ethUtils = require("ethereumjs-util")
 const DepositAdminPK = "0x65896b827386e22274ab391e5eb640fe57a841bf52597188740e6e0c49772e1e" // Deposit Admin is accounts[0]
+const DepositingUserPK = "0x73ba3ba8b1875cb951003ae9e27955137069a0fa677d7ed789c498f286ac199e" // Deposit Admin is accounts[1]
 const domainType = [
     {
         name: "name",
@@ -52,6 +53,11 @@ const depositABI = {
             internalType: "uint256",
             name: "amount",
             type: "uint256",
+        },
+        {
+            internalType: "string",
+            name: "burnTxHash",
+            type: "string",
         },
     ],
     name: "deposit",
@@ -169,7 +175,9 @@ contract("TeraBlock Token", function (accounts) {
         })
         it("Deposit Tokens from the Bridge by Deposit Admin", async () => {
             //deposit
-            await truffleAssert.passes(tera_block_bridge.deposit(accounts[1], 1000000, { from: accounts[0] }))
+            await truffleAssert.passes(
+                tera_block_bridge.deposit(accounts[1], 1000000, "burnHash", { from: accounts[0] })
+            )
             assert.equal(await tera_block_token.balanceOf(accounts[1]), 1500000)
             assert.equal(await tera_block_token.totalSupply(), 2000000)
         })
@@ -190,7 +198,7 @@ contract("TeraBlock Token", function (accounts) {
                 nonce,
                 depositABI,
                 domainData,
-                [accounts[1], 1000000]
+                [accounts[1], 1000000, "burnHashMeta"]
             )
 
             const metaTransaction = await tera_block_bridge.executeMetaTransaction(
@@ -212,7 +220,7 @@ contract("TeraBlock Token", function (accounts) {
         it("Non Deposit Admin should not Deposit Tokens on the Contract", async () => {
             //deposit
             await truffleAssert.reverts(
-                tera_block_bridge.deposit(accounts[1], 1000000, { from: accounts[2] })
+                tera_block_bridge.deposit(accounts[1], 1000000, "burnHash", { from: accounts[2] })
             )
             assert.equal((await tera_block_token.totalSupply()).toNumber(), 3000000)
         })
@@ -230,7 +238,7 @@ contract("TeraBlock Token", function (accounts) {
         it("throws if attempting to deposit when `paused`", async () => {
             await tera_block_bridge.pause()
             await truffleAssert.reverts(
-                tera_block_bridge.deposit(accounts[1], 1000000, { from: accounts[0] }),
+                tera_block_bridge.deposit(accounts[1], 1000000, "burnHash", { from: accounts[0] }),
                 "Pausable: paused"
             )
         })

@@ -25,8 +25,9 @@ contract TeraBlockBridge is Pausable, ReentrancyGuard, ContextMixin, NativeMetaT
     }
 
     mapping(address => bool) private _admins; // user address => admin? mapping
-
+    mapping(string => bool) public burntTxHashes;
     event AdminAccessSet(address _admin, bool _enabled);
+    event Deposited(address indexed userAddress, uint256 amount, string indexed burntTxHash);
 
     /**
      * @notice Set Admin Access
@@ -64,9 +65,16 @@ contract TeraBlockBridge is Pausable, ReentrancyGuard, ContextMixin, NativeMetaT
         return ContextMixin.msgSender();
     }
 
-    function deposit(address user, uint256 amount) external onlyAdmin nonReentrant whenNotPaused {
+    function deposit(
+        address user,
+        uint256 amount,
+        string memory burntTxHash
+    ) external onlyAdmin nonReentrant whenNotPaused {
+        require(burntTxHashes[burntTxHash] == false, "Burnt Tx Hash already exists");
+        burntTxHashes[burntTxHash] = true;
         bytes memory depositData = abi.encodePacked(amount);
         token.deposit(user, depositData);
+        emit Deposited(user, amount, burntTxHash);
     }
 
     //

@@ -53,7 +53,7 @@ contract EIP712Base is Initializable {
     function getChainId() public view returns (uint256) {
         uint256 id;
         assembly {
-            id := 5777
+            id := chainid()
         }
         return id;
     }

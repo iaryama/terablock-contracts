@@ -9,7 +9,7 @@ import "./EIP712Base.sol";
 contract NativeMetaTransaction is EIP712Base {
     bytes32 private constant META_TRANSACTION_TYPEHASH =
         keccak256(bytes("MetaTransaction(uint256 nonce,address from,bytes functionSignature)"));
-    event MetaTransactionExecuted(address userAddress, address payable relayerAddress, bytes functionSignature);
+    event MetaTransactionExecuted(address adminAddress, address payable relayerAddress, bytes functionSignature);
     mapping(address => uint256) nonces;
 
     /*
@@ -24,26 +24,26 @@ contract NativeMetaTransaction is EIP712Base {
     }
 
     function executeMetaTransaction(
-        address userAddress,
+        address adminAddress,
         bytes memory functionSignature,
         bytes32 sigR,
         bytes32 sigS,
         uint8 sigV
     ) public payable returns (bytes memory) {
         MetaTransaction memory metaTx = MetaTransaction({
-            nonce: nonces[userAddress],
-            from: userAddress,
+            nonce: nonces[msg.sender],
+            from: adminAddress,
             functionSignature: functionSignature
         });
-        require(verify(userAddress, metaTx, sigR, sigS, sigV), "Signer and signature do not match");
+        require(verify(adminAddress, metaTx, sigR, sigS, sigV), "Signer and signature do not match");
 
         // increase nonce for user (to avoid re-use)
-        nonces[userAddress] = nonces[userAddress] + 1;
+        nonces[msg.sender] = nonces[msg.sender] + 1;
 
-        emit MetaTransactionExecuted(userAddress, payable(msg.sender), functionSignature);
+        emit MetaTransactionExecuted(adminAddress, payable(msg.sender), functionSignature);
 
-        // Append userAddress and relayer address at the end to extract it from calling context
-        (bool success, bytes memory returnData) = address(this).call(abi.encodePacked(functionSignature, userAddress));
+        // Append adminAddress and relayer address at the end to extract it from calling context
+        (bool success, bytes memory returnData) = address(this).call(abi.encodePacked(functionSignature, adminAddress));
         require(success, "Function call not successful");
 
         return returnData;
