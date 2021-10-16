@@ -183,7 +183,7 @@ contract("TeraBlock Token", function (accounts) {
         })
         it("Deposit Tokens from the Bridge Signed Deposit Admin With Meta Tx Done by the User", async () => {
             let name = "TeraBlockBridge"
-            let nonce = await tera_block_bridge.getNonce(accounts[0])
+            let nonce = await tera_block_bridge.getNonce(accounts[1])
             let version = "1"
             let chainId = "0x" + (await tera_block_bridge.getChainId()).toString(16)
             let domainData = {
