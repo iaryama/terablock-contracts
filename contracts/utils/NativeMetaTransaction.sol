@@ -9,7 +9,12 @@ import "./EIP712Base.sol";
 contract NativeMetaTransaction is EIP712Base {
     bytes32 private constant META_TRANSACTION_TYPEHASH =
         keccak256(bytes("MetaTransaction(uint256 nonce,address from,bytes functionSignature)"));
-    event MetaTransactionExecuted(address adminAddress, address payable relayerAddress, bytes functionSignature);
+    event MetaTransactionExecuted(
+        address adminAddress,
+        address relayerAddress,
+        bytes functionSignature,
+        bytes returnData
+    );
     mapping(address => uint256) nonces;
 
     /*
@@ -29,7 +34,7 @@ contract NativeMetaTransaction is EIP712Base {
         bytes32 sigR,
         bytes32 sigS,
         uint8 sigV
-    ) public payable returns (bytes memory) {
+    ) public returns (bytes memory) {
         MetaTransaction memory metaTx = MetaTransaction({
             nonce: nonces[msg.sender],
             from: adminAddress,
@@ -40,12 +45,11 @@ contract NativeMetaTransaction is EIP712Base {
         // increase nonce for user (to avoid re-use)
         nonces[msg.sender] = nonces[msg.sender] + 1;
 
-        emit MetaTransactionExecuted(adminAddress, payable(msg.sender), functionSignature);
-
         // Append adminAddress and relayer address at the end to extract it from calling context
         (bool success, bytes memory returnData) = address(this).call(abi.encodePacked(functionSignature, adminAddress));
-        require(success, "Function call not successful");
-
+        string memory response = string(returnData);
+        require(success, response);
+        emit MetaTransactionExecuted(adminAddress, msg.sender, functionSignature, returnData);
         return returnData;
     }
 

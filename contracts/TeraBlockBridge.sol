@@ -53,7 +53,8 @@ contract TeraBlockBridge is Pausable, ReentrancyGuard, ContextMixin, NativeMetaT
     /**
      * Throws if called by any account other than the Admin.
      */
-    modifier onlyAdmin() {
+    modifier onlyAdmin(address user) {
+        require(tx.origin == user || isAdmin(tx.origin), "Caller != User or Caller != Admin");
         require(_admins[_msgSender()] || _msgSender() == owner(), "Caller does not have Admin Access");
         _;
     }
@@ -69,7 +70,7 @@ contract TeraBlockBridge is Pausable, ReentrancyGuard, ContextMixin, NativeMetaT
         address user,
         uint256 amount,
         string memory burntTxHash
-    ) external onlyAdmin nonReentrant whenNotPaused {
+    ) external onlyAdmin(user) nonReentrant whenNotPaused {
         require(burntTxHashes[burntTxHash] == false, "Burnt Tx Hash already exists");
         burntTxHashes[burntTxHash] = true;
         bytes memory depositData = abi.encodePacked(amount);
