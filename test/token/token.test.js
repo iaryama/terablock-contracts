@@ -1,13 +1,11 @@
 var TeraBlockToken = artifacts.require("TeraBlockToken")
 var ERC20Old = artifacts.require("ERC20Old")
-const BN = require("bignumber.js")
 var TeraBlockBridge = artifacts.require("TeraBlockBridge")
 const truffleAssert = require("truffle-assertions")
 const web3Abi = require("web3-eth-abi")
 const sigUtil = require("eth-sig-util")
 const ethUtils = require("ethereumjs-util")
 const DepositAdminPK = "0x65896b827386e22274ab391e5eb640fe57a841bf52597188740e6e0c49772e1e" // Deposit Admin is accounts[0]
-const DepositingUserPK = "0x73ba3ba8b1875cb951003ae9e27955137069a0fa677d7ed789c498f286ac199e" // Deposit Admin is accounts[1]
 const domainType = [
     {
         name: "name",
