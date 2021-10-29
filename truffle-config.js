@@ -64,7 +64,7 @@ module.exports = {
     },
     plugins: ["truffle-plugin-verify"],
     api_keys: {
-        etherscan: "MY_API_KEY",
-        bscscan: "MY_API_KEY",
+        etherscan: "X949QYKBMIF8NN4SVEN4XBANMD6SCDUZ6Q",
+        bscscan: "RWXR89XH3ZZQPSXH37YFMPGUIGUC6GXDPU",
     },
 }

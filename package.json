@@ -40,5 +40,8 @@
     },
     "lint-staged": {
         "*.{js,json,sol,md}": "prettier --write"
+    },
+    "dependencies": {
+        "strip-hex-prefix": "^1.0.0"
     }
 }
