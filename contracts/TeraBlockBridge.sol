@@ -17,7 +17,7 @@ interface ITeraBlockToken {
 
 // Tera Block Bridge
 contract TeraBlockBridge is Pausable, ReentrancyGuard, ContextMixin, NativeMetaTransaction, Ownable {
-    ITeraBlockToken token;
+    ITeraBlockToken public immutable token;
 
     constructor(ITeraBlockToken _token) public {
         _initializeEIP712("TeraBlockBridge", "1");

@@ -3,7 +3,7 @@ var ERC20Old = artifacts.require("ERC20Old")
 var TeraBlockBridge = artifacts.require("TeraBlockBridge")
 const truffleAssert = require("truffle-assertions")
 const web3Abi = require("web3-eth-abi")
-const sigUtil = require("eth-sig-util")
+const sigUtil = require("@metamask/eth-sig-util")
 const DepositAdminPK = "65896b827386e22274ab391e5eb640fe57a841bf52597188740e6e0c49772e1e" // Deposit Admin is accounts[0]
 const domainType = [
     {
@@ -53,7 +53,7 @@ const depositABI = {
         },
         {
             internalType: "string",
-            name: "burnTxHash",
+            name: "burntTxHash",
             type: "string",
         },
     ],
@@ -63,12 +63,12 @@ const depositABI = {
     type: "function",
 }
 
-const getTransactionData = async (user, nonce, abi, domainData, params) => {
+const getTransactionData = async (admin, nonce, abi, domainData, params) => {
     const functionSignature = web3Abi.encodeFunctionCall(abi, params)
 
     let message = {}
     message.nonce = parseInt(nonce)
-    message.from = await user.address
+    message.from = await admin.address
     message.functionSignature = functionSignature
 
     const dataToSign = {
@@ -80,8 +80,10 @@ const getTransactionData = async (user, nonce, abi, domainData, params) => {
         primaryType: "MetaTransaction",
         message: message,
     }
-    const signature = sigUtil.signTypedData(Buffer.from(user.privateKey, "hex"), {
+    const signature = sigUtil.signTypedData({
+        privateKey: Buffer.from(admin.privateKey, "hex"),
         data: dataToSign,
+        version: sigUtil.SignTypedDataVersion.V3,
     })
 
     let r = signature.slice(0, 66)
@@ -172,7 +174,7 @@ contract("TeraBlock Token", function (accounts) {
         it("Deposit Tokens from the Bridge by Deposit Admin", async () => {
             //deposit
             await truffleAssert.passes(
-                tera_block_bridge.deposit(accounts[1], 1000000, "burnHash", { from: accounts[0] })
+                tera_block_bridge.deposit(accounts[1], 1000000, "burntHash", { from: accounts[0] })
             )
             assert.equal(await tera_block_token.balanceOf(accounts[1]), 1500000)
             assert.equal(await tera_block_token.totalSupply(), 2000000)
@@ -194,7 +196,7 @@ contract("TeraBlock Token", function (accounts) {
                 nonce,
                 depositABI,
                 domainData,
-                [accounts[1], 1000000, "burnHashMeta"]
+                [accounts[1], 1000000, "burntHashMeta"]
             )
             await truffleAssert.reverts(
                 tera_block_bridge.executeMetaTransaction(accounts[0], functionSignature, r, s, v, {
@@ -209,6 +211,12 @@ contract("TeraBlock Token", function (accounts) {
                 v,
                 { from: accounts[1] }
             )
+
+            await truffleAssert.reverts(
+                tera_block_bridge.executeMetaTransaction(accounts[0], functionSignature, r, s, v, {
+                    from: accounts[1],
+                })
+            )
             console.log(
                 "----------Meta Tx---------",
                 "\nFrom Address fetched in Receipt " + metaTransaction.receipt.from,
@@ -220,7 +228,7 @@ contract("TeraBlock Token", function (accounts) {
         it("Non Deposit Admin should not Deposit Tokens on the Contract", async () => {
             //deposit
             await truffleAssert.reverts(
-                tera_block_bridge.deposit(accounts[1], 1000000, "burnHash", { from: accounts[2] })
+                tera_block_bridge.deposit(accounts[1], 1000000, "burntHash", { from: accounts[2] })
             )
             assert.equal((await tera_block_token.totalSupply()).toNumber(), 3000000)
         })
