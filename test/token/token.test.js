@@ -183,12 +183,12 @@ contract("TeraBlock Token", function (accounts) {
             let name = "TeraBlockBridge"
             let nonce = await tera_block_bridge.getNonce(accounts[1])
             let version = "1"
-            let chainId = "0x" + (await tera_block_bridge.getChainId()).toString(16)
+            let chainId = await tera_block_bridge.getChainId()
             let domainData = {
                 name: name,
                 version: version,
                 verifyingContract: tera_block_bridge.address,
-                salt: "0x" + chainId.substring(2).padStart(64, "0"),
+                salt: "0x" + parseInt(chainId).toString(16).padStart(64, "0"),
             }
 
             let { r, s, v, functionSignature } = await getTransactionData(
