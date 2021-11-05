@@ -1,12 +1,12 @@
 const Swap = artifacts.require("Swap")
-const MultiCoinChild = artifacts.require("MultiCoinChild")
+const MultiCoin = artifacts.require("MultiCoin")
 const TeraBlockToken = artifacts.require("TeraBlockToken")
 const truffleAssert = require("truffle-assertions")
 
 contract("Swap contract tests", async (accounts) => {
     let oldToken, newToken, swap
     beforeEach(async () => {
-        oldToken = await MultiCoinChild.new(1000)
+        oldToken = await MultiCoin.new(1000)
         newToken = await TeraBlockToken.new()
         swap = await Swap.new(oldToken.address, newToken.address)
         await newToken.mint(swap.address, 1000)

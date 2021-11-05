@@ -1,5 +1,5 @@
 var TeraBlockToken = artifacts.require("TeraBlockToken")
-var OldToken = artifacts.require("MultiCoinChild")
+var OldToken = artifacts.require("MultiCoin")
 const Swap = artifacts.require("Swap")
 module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(TeraBlockToken)

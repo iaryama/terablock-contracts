@@ -4,7 +4,7 @@ pragma solidity ^0.6.12;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract MultiCoinType1Parent is ERC20("MultiCoinType1Parent", "MCT1P"), Ownable {
+contract MultiCoinWithBurnMint is ERC20("MultiCoinWithBurnMint", "MCWBM"), Ownable {
     function mint(address to, uint256 amount) external onlyOwner {
         _mint(to, amount);
     }

@@ -1,5 +1,5 @@
 var TeraBlockToken = artifacts.require("TeraBlockToken")
-var MultiCoinChild = artifacts.require("MultiCoinChild")
+var MultiCoin = artifacts.require("MultiCoin")
 var TeraBlockBridge = artifacts.require("TeraBlockBridge")
 const truffleAssert = require("truffle-assertions")
 const web3Abi = require("web3-eth-abi")
@@ -105,7 +105,7 @@ contract("TeraBlock Token", function (accounts) {
         tera_block_token = await TeraBlockToken.new({ from: accounts[0] })
         tera_block_bridge = await TeraBlockBridge.new(tera_block_token.address, { from: accounts[0] })
         // used to test withdrawal of any erc20 token on `tera_block_token`
-        oldToken = await MultiCoinChild.new(1000)
+        oldToken = await MultiCoin.new(1000)
     })
 
     describe("TeraBlock Token Contract Tests", async () => {
