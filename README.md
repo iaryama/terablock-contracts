@@ -33,13 +33,11 @@ npm install
 
 ### Configure project
 
--   Copy `.example.env` to `.env`
+-   Configure the .env
 
 ```sh
 cp .example.env .env
 ```
-
--   Add the infura project id & deployer private key to the `.env`
 
 ## Run tests
 

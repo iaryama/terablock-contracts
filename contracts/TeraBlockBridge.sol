@@ -2,9 +2,11 @@
 
 pragma solidity 0.6.12;
 
-import "./utils/AccessProtected.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "./utils/ContextMixin.sol";
+import "./utils/NativeMetaTransaction.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 interface ITeraBlockToken {
     /**
@@ -14,16 +16,66 @@ interface ITeraBlockToken {
 }
 
 // Tera Block Bridge
-contract TeraBlockBridge is AccessProtected, Pausable, ReentrancyGuard {
-    ITeraBlockToken token;
+contract TeraBlockBridge is Pausable, ReentrancyGuard, ContextMixin, NativeMetaTransaction, Ownable {
+    ITeraBlockToken public immutable token;
 
     constructor(ITeraBlockToken _token) public {
+        _initializeEIP712("TeraBlockBridge", "1");
         token = _token;
     }
 
-    function deposit(address user, uint256 amount) external onlyAdmin nonReentrant whenNotPaused {
+    mapping(address => bool) private _admins; // user address => admin? mapping
+    mapping(string => bool) public burntTxHashes;
+    event AdminAccessSet(address _admin, bool _enabled);
+    event Deposited(address indexed userAddress, uint256 amount, string indexed burntTxHash);
+
+    /**
+     * @notice Set Admin Access
+     *
+     * @param admin - Address of Minter
+     * @param enabled - Enable/Disable Admin Access
+     */
+    function setAdmin(address admin, bool enabled) external onlyOwner {
+        _admins[admin] = enabled;
+        emit AdminAccessSet(admin, enabled);
+    }
+
+    /**
+     * @notice Check Admin Access
+     *
+     * @param admin - Address of Admin
+     * @return whether minter has access
+     */
+    function isAdmin(address admin) public view returns (bool) {
+        return owner() == admin || _admins[admin];
+    }
+
+    /**
+     * Throws if called by any account other than the Admin.
+     */
+    modifier onlyAdmin(address user) {
+        require(tx.origin == user || isAdmin(tx.origin), "Caller != User or Caller != Admin");
+        require(_admins[_msgSender()] || _msgSender() == owner(), "Caller does not have Admin Access");
+        _;
+    }
+
+    /**
+     * This is used instead of msg.sender
+     */
+    function _msgSender() internal view override returns (address payable) {
+        return ContextMixin.msgSender();
+    }
+
+    function deposit(
+        address user,
+        uint256 amount,
+        string memory burntTxHash
+    ) external onlyAdmin(user) nonReentrant whenNotPaused {
+        require(burntTxHashes[burntTxHash] == false, "Burnt Tx Hash already exists");
+        burntTxHashes[burntTxHash] = true;
         bytes memory depositData = abi.encodePacked(amount);
         token.deposit(user, depositData);
+        emit Deposited(user, amount, burntTxHash);
     }
 
     //
