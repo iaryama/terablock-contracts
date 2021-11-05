@@ -211,7 +211,7 @@ contract("TeraBlock Token", function (accounts) {
             )
 
             await truffleAssert.reverts(
-                tera_block_bridge.executeMetaTransaction(accounts[0], functionSignature, r, s, v, {
+                tera_block_bridge.executeMetaTransaction(accounts[1], functionSignature, r, s, v, {
                     from: accounts[1],
                 })
             )
