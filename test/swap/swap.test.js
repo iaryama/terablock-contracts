@@ -1,16 +1,15 @@
 const Swap = artifacts.require("Swap")
-const ERC20Old = artifacts.require("ERC20Old")
+const MultiCoinChild = artifacts.require("MultiCoinChild")
 const TeraBlockToken = artifacts.require("TeraBlockToken")
 const truffleAssert = require("truffle-assertions")
 
 contract("Swap contract tests", async (accounts) => {
     let oldToken, newToken, swap
     beforeEach(async () => {
-        oldToken = await ERC20Old.new()
+        oldToken = await MultiCoinChild.new(1000)
         newToken = await TeraBlockToken.new()
         swap = await Swap.new(oldToken.address, newToken.address)
         await newToken.mint(swap.address, 1000)
-        await oldToken.mint(accounts[0], 1000)
         await oldToken.approve(swap.address, 1000)
     })
     it("correctly deploys with token addresses", async () => {
@@ -47,8 +46,6 @@ contract("Swap contract tests", async (accounts) => {
             await truffleAssert.reverts(swap.swapTokens(1001), "ERC20: transfer amount exceeds balance")
         })
         it("throws if insufficient newTokens in the contract", async () => {
-            // mint extra 1000 tokens so new balance 2000
-            await oldToken.mint(accounts[0], 1000)
             await oldToken.approve(swap.address, 2000)
             // reverts because contract holds only 1000 `newTokens`
             await truffleAssert.reverts(swap.swapTokens(1001), "ERC20: transfer amount exceeds balance")
