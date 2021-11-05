@@ -37,7 +37,7 @@ contract NativeMetaTransaction is EIP712Base {
     ) public returns (bytes memory) {
         MetaTransaction memory metaTx = MetaTransaction({
             nonce: nonces[msg.sender],
-            from: adminAddress,
+            from: msg.sender,
             functionSignature: functionSignature
         });
         require(verify(adminAddress, metaTx, sigR, sigS, sigV), "Signer and signature do not match");

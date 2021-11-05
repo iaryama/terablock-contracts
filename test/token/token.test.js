@@ -68,7 +68,7 @@ const getTransactionData = async (admin, nonce, abi, domainData, params) => {
 
     let message = {}
     message.nonce = parseInt(nonce)
-    message.from = await admin.address
+    message.from = params[0]
     message.functionSignature = functionSignature
 
     const dataToSign = {
