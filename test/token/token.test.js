@@ -63,7 +63,7 @@ const depositABI = {
     type: "function",
 }
 
-const getTransactionData = async (admin, nonce, abi, domainData, params) => {
+const getTransactionData = async (nonce, abi, domainData, params) => {
     const functionSignature = web3Abi.encodeFunctionCall(abi, params)
 
     let message = {}
@@ -81,7 +81,7 @@ const getTransactionData = async (admin, nonce, abi, domainData, params) => {
         message: message,
     }
     const signature = sigUtil.signTypedData({
-        privateKey: Buffer.from(admin.privateKey, "hex"),
+        privateKey: Buffer.from(DepositAdminPK, "hex"),
         data: dataToSign,
         version: sigUtil.SignTypedDataVersion.V3,
     })
@@ -191,13 +191,11 @@ contract("TeraBlock Token", function (accounts) {
                 salt: "0x" + parseInt(chainId).toString(16).padStart(64, "0"),
             }
 
-            let { r, s, v, functionSignature } = await getTransactionData(
-                { address: accounts[0], privateKey: DepositAdminPK },
-                nonce,
-                depositABI,
-                domainData,
-                [accounts[1], 1000000, "burntHashMeta"]
-            )
+            let { r, s, v, functionSignature } = await getTransactionData(nonce, depositABI, domainData, [
+                accounts[1],
+                1000000,
+                "burntHashMeta",
+            ])
             await truffleAssert.reverts(
                 tera_block_bridge.executeMetaTransaction(accounts[0], functionSignature, r, s, v, {
                     from: accounts[2],
