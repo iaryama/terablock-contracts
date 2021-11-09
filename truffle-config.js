@@ -38,14 +38,14 @@ module.exports = {
             network_id: "1",
             skipDryRun: true,
         },
-        rinkeby_testnet: {
+        ropsten_testnet: {
             provider: () =>
                 new HDWalletProvider({
                     privateKeys: [process.env.PRIVATE_KEY],
-                    providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+                    providerOrUrl: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
                     addressIndex: 0,
                 }),
-            network_id: "4",
+            network_id: "3",
             skipDryRun: true,
             networkCheckTimeout: 2000000,
             timeoutBlocks: 200,
