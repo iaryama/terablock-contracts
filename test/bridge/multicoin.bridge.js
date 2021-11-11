@@ -236,7 +236,7 @@ contract("MultiCoin", function (accounts) {
                 let domainData = {
                     name: name,
                     version: version,
-                    verifyingContract: multi_coin_lock.address,
+                    verifyingContract: multi_coin_lock_address,
                     salt: "0x" + parseInt(chainId).toString(16).padStart(64, "0"),
                 }
 
@@ -264,6 +264,12 @@ contract("MultiCoin", function (accounts) {
                     "----------Meta Tx---------",
                     "\nFrom Address fetched in Receipt " + metaTransaction.receipt.from,
                     "\nSigned By " + accounts[0]
+                )
+            })
+            it("Remove Liquidity Provided by Liquidity Admin", async () => {
+                const poolLiquidity = await multi_coin_parent.balanceOf(multi_coin_lock_address)
+                await truffleAssert.passes(
+                    multi_coin_lock.removeLiquidity(poolLiquidity, { from: accounts[2] })
                 )
             })
         })

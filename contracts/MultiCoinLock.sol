@@ -13,13 +13,13 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
     using SafeMath for uint256;
     IERC20 public immutable token;
     address public liquidityAdmin;
-    uint256 liquidityByAdmin;
     event Lock(address indexed user, uint256 amount);
     event Release(address indexed user, uint256 amount);
     event AddLiquidity(address indexed admin, uint256 amount);
+    event RemoveLiquidity(address indexed admin, uint256 amount);
     event AddedLiquidityAdmin(address indexed admin);
     event AdminAccessSet(address _admin, bool _enabled);
-    mapping(address => bool) public _admins; // user address => admin? mapping
+    mapping(address => bool) public _admins;
     mapping(string => bool) public parentHashesProof;
 
     constructor(IERC20 _token) public {
@@ -27,11 +27,14 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
         token = _token;
     }
 
-    function addLiquidity(uint256 _amount) external nonReentrant {
-        require(msg.sender == liquidityAdmin, "Sender != LiquidityAdmin");
-        liquidityByAdmin = liquidityByAdmin.add(_amount);
+    function addLiquidity(uint256 _amount) external onlyLiquidityAdmin nonReentrant {
         token.safeTransferFrom(msg.sender, address(this), _amount);
         emit AddLiquidity(msg.sender, _amount);
+    }
+
+    function removeLiquidity(uint256 _amount) external onlyLiquidityAdmin nonReentrant {
+        token.safeTransfer(msg.sender, _amount);
+        emit RemoveLiquidity(msg.sender, _amount);
     }
 
     function lockTokens(uint256 _amount) external nonReentrant {
@@ -81,6 +84,14 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
      */
     modifier onlyAdmin() {
         require(isAdmin(_msgSender()), "Caller does not have Admin Access");
+        _;
+    }
+
+    /**
+     * Throws if called by any account other than the Liquidity Admin.
+     */
+    modifier onlyLiquidityAdmin() {
+        require(msg.sender == liquidityAdmin, "Sender != LiquidityAdmin");
         _;
     }
 
