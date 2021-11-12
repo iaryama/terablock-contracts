@@ -271,6 +271,19 @@ contract("MultiCoin", function (accounts) {
             it("should not withdraws liquidity tokens using withdraw function", async () => {
                 await truffleAssert.reverts(multi_coin_lock.withdrawTokens(multi_coin_parent.address))
             })
+            it("throws if non owner tries to pause", async () => {
+                await truffleAssert.reverts(
+                    multi_coin_lock.pause({ from: accounts[1] }),
+                    "Ownable: caller is not the owner"
+                )
+            })
+            it("throws if attempting to deposit when `paused`", async () => {
+                await multi_coin_lock.pause()
+                await truffleAssert.reverts(
+                    multi_coin_lock.lockTokens(1000000, { from: accounts[0] }),
+                    "Pausable: paused"
+                )
+            })
         })
     })
 })
