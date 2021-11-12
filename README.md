@@ -68,10 +68,10 @@ npm run deploy:bsc_testnet
 npm run deploy:bsc_mainnet
 ```
 
-### on Rinkeby Testnet
+### on Ropsten Testnet
 
 ```sh
-npm run deploy:rinkeby_testnet
+npm run deploy:ropsten_testnet
 ```
 
 ### on Ethereum Mainnet

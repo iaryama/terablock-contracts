@@ -8,7 +8,7 @@
         "deploy:ganache": "truffle migrate --reset",
         "deploy:bsc_testnet": "truffle migrate --reset --network bsc_testnet",
         "deploy:bsc_mainnet": "truffle migrate --reset  --network bsc_mainnet",
-        "deploy:rinkeby_testnet": "truffle migrate --reset --network rinkeby_testnet",
+        "deploy:ropsten_testnet": "truffle migrate --reset --network ropsten_testnet",
         "deploy:ethereum_mainnet": "truffle migrate --reset  --network ethereum_mainnet",
         "prepare": "husky install"
     },
