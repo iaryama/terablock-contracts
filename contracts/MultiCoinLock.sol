@@ -12,12 +12,9 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
     IERC20 public immutable token;
-    address public liquidityAdmin;
     event Lock(address indexed user, uint256 amount);
     event Release(address indexed user, uint256 amount);
-    event AddLiquidity(address indexed admin, uint256 amount);
-    event RemoveLiquidity(address indexed admin, uint256 amount);
-    event AddedLiquidityAdmin(address indexed admin);
+    event RemoveLiquidity(address indexed triggeredBy, uint256 amount);
     event AdminAccessSet(address _admin, bool _enabled);
     mapping(address => bool) public _admins;
     mapping(string => bool) public parentHashesProof;
@@ -27,13 +24,8 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
         token = _token;
     }
 
-    function addLiquidity(uint256 _amount) external onlyLiquidityAdmin nonReentrant {
-        token.safeTransferFrom(msg.sender, address(this), _amount);
-        emit AddLiquidity(msg.sender, _amount);
-    }
-
-    function removeLiquidity(uint256 _amount) external onlyLiquidityAdmin nonReentrant {
-        token.safeTransfer(msg.sender, _amount);
+    function removeLiquidity(uint256 _amount) external onlyAdmin nonReentrant {
+        token.safeTransfer(owner(), _amount);
         emit RemoveLiquidity(msg.sender, _amount);
     }
 
@@ -51,11 +43,6 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
         parentHashesProof[parentHashProof] = true;
         token.safeTransfer(_user, _amount);
         emit Release(_user, _amount);
-    }
-
-    function setLiquidityAdmin(address _liquidityAdmin) external onlyOwner {
-        liquidityAdmin = _liquidityAdmin;
-        emit AddedLiquidityAdmin(_liquidityAdmin);
     }
 
     /**
@@ -79,19 +66,16 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
         return owner() == admin || _admins[admin];
     }
 
+    /// Withdraw any IERC20 tokens accumulated in this contract
+    function withdrawTokens(IERC20 _token) external onlyOwner nonReentrant {
+        _token.safeTransfer(owner(), _token.balanceOf(address(this)));
+    }
+
     /**
      * Throws if called by any account other than the Admin.
      */
     modifier onlyAdmin() {
         require(isAdmin(_msgSender()), "Caller does not have Admin Access");
-        _;
-    }
-
-    /**
-     * Throws if called by any account other than the Liquidity Admin.
-     */
-    modifier onlyLiquidityAdmin() {
-        require(msg.sender == liquidityAdmin, "Sender != LiquidityAdmin");
         _;
     }
 

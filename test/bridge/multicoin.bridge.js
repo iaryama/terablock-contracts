@@ -200,23 +200,12 @@ contract("MultiCoin", function (accounts) {
                     return ev.amount == 100 && ev.user == accounts[0]
                 })
             })
-            it("Add Liquidity Admin and Provide Liquidity", async () => {
-                const receipt = await multi_coin_lock.setLiquidityAdmin(accounts[2], {
-                    from: accounts[0],
-                })
-                truffleAssert.eventEmitted(receipt, "AddedLiquidityAdmin", (ev) => {
-                    return ev.admin == accounts[2]
-                })
-
-                await truffleAssert.passes(
-                    multi_coin_parent.approve(multi_coin_lock_address, 4000, { from: accounts[2] })
-                )
-                await truffleAssert.passes(multi_coin_lock.addLiquidity(4000, { from: accounts[2] }))
+            it("Set Admin to the Lock Contract", async () => {
+                await truffleAssert.passes(multi_coin_lock.setAdmin(accounts[2], true))
             })
-            it("Non Liquidity Admin should not add liquidity", async () => {
-                await truffleAssert.reverts(
-                    multi_coin_lock.addLiquidity(1000, { from: accounts[3] }),
-                    "Sender != LiquidityAdmin"
+            it("Provide Liquidity", async () => {
+                await truffleAssert.passes(
+                    multi_coin_parent.transfer(multi_coin_lock_address, 4000, { from: accounts[2] })
                 )
             })
             it("Release Tokens from the Lock Contract. Signed ReleaseTokens By Admin With Meta Tx Done by the User", async () => {
