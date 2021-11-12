@@ -3,13 +3,11 @@ pragma solidity 0.6.12;
 
 import "./EIP712Base.sol";
 import "./ContextMixin.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
  * https://github.com/maticnetwork/pos-portal/blob/master/contracts/common/NativeMetaTransaction.sol
  */
-contract NativeMetaTransaction is EIP712Base, ContextMixin, Pausable, Ownable {
+contract NativeMetaTransaction is EIP712Base, ContextMixin {
     bytes32 private constant META_TRANSACTION_TYPEHASH =
         keccak256(bytes("MetaTransaction(uint256 nonce,address from,bytes functionSignature)"));
     event MetaTransactionExecuted(

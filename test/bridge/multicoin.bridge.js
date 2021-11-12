@@ -261,6 +261,16 @@ contract("MultiCoin", function (accounts) {
                     multi_coin_lock.removeLiquidity(poolLiquidity, { from: accounts[2] })
                 )
             })
+            it("withdraws any tokens from contract", async () => {
+                //mint
+                it("should be able to mint new tokens", async function () {
+                    await truffleAssert.passes(multi_coin_child.mint(multi_coin_lock, 1000000))
+                })
+                await truffleAssert.passes(multi_coin_lock.withdrawTokens(multi_coin_child.address))
+            })
+            it("should not withdraws liquidity tokens using withdraw function", async () => {
+                await truffleAssert.reverts(multi_coin_lock.withdrawTokens(multi_coin_parent.address))
+            })
         })
     })
 })

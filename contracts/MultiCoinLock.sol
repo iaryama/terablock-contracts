@@ -6,9 +6,11 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./utils/NativeMetaTransaction.sol";
 
-contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
+contract MultiCoinLock is NativeMetaTransaction, Ownable, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
     IERC20 public immutable token;
@@ -29,7 +31,7 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
         emit RemoveLiquidity(msg.sender, _amount);
     }
 
-    function lockTokens(uint256 _amount) external nonReentrant {
+    function lockTokens(uint256 _amount) external whenNotPaused nonReentrant {
         token.safeTransferFrom(msg.sender, address(this), _amount);
         emit Lock(msg.sender, _amount);
     }
@@ -38,7 +40,7 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
         address _user,
         uint256 _amount,
         string memory parentHashProof
-    ) external onlyAdmin nonReentrant {
+    ) external whenNotPaused onlyAdmin nonReentrant {
         require(parentHashesProof[parentHashProof] == false, "Parent Tx Hash already exists");
         parentHashesProof[parentHashProof] = true;
         token.safeTransfer(_user, _amount);
@@ -67,7 +69,8 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
     }
 
     /// Withdraw any IERC20 tokens accumulated in this contract
-    function withdrawTokens(IERC20 _token) external onlyOwner nonReentrant {
+    function withdrawTokens(IERC20 _token) external onlyAdmin nonReentrant {
+        require(token != _token, "Cant withdraw the Liquidity Providing tokens");
         _token.safeTransfer(owner(), _token.balanceOf(address(this)));
     }
 
@@ -84,5 +87,16 @@ contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
      */
     function _msgSender() internal view override returns (address payable) {
         return ContextMixin.msgSender();
+    }
+
+    //
+    // IMPLEMENT PAUSABLE FUNCTIONS
+    //
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
     }
 }

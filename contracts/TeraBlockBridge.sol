@@ -3,6 +3,8 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./utils/NativeMetaTransaction.sol";
 
 interface ITeraBlockToken {
@@ -13,7 +15,7 @@ interface ITeraBlockToken {
 }
 
 // Tera Block Bridge
-contract TeraBlockBridge is ReentrancyGuard, NativeMetaTransaction {
+contract TeraBlockBridge is ReentrancyGuard, Ownable, Pausable, NativeMetaTransaction {
     ITeraBlockToken public immutable token;
 
     constructor(ITeraBlockToken _token) public {
