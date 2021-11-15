@@ -3,15 +3,17 @@ pragma solidity 0.6.12;
 
 import "./EIP712Base.sol";
 import "./ContextMixin.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
  * https://github.com/maticnetwork/pos-portal/blob/master/contracts/common/NativeMetaTransaction.sol
  */
-contract NativeMetaTransaction is EIP712Base, ContextMixin {
+contract NativeMetaTransaction is EIP712Base, Ownable, Pausable, ContextMixin {
     bytes32 private constant META_TRANSACTION_TYPEHASH =
         keccak256(bytes("MetaTransaction(uint256 nonce,address from,bytes functionSignature)"));
     event MetaTransactionExecuted(
-        address adminAddress,
+        address ownerAddress,
         address relayerAddress,
         bytes functionSignature,
         bytes returnData
@@ -31,7 +33,6 @@ contract NativeMetaTransaction is EIP712Base, ContextMixin {
     }
 
     function executeMetaTransaction(
-        address adminAddress,
         bytes memory functionSignature,
         bytes32 sigR,
         bytes32 sigS,
@@ -42,16 +43,16 @@ contract NativeMetaTransaction is EIP712Base, ContextMixin {
             from: msg.sender,
             functionSignature: functionSignature
         });
-        require(verify(adminAddress, metaTx, sigR, sigS, sigV), "Signer and signature do not match");
+        require(verify(owner(), metaTx, sigR, sigS, sigV), "Signer and signature do not match");
 
         // increase nonce for user (to avoid re-use)
         nonces[msg.sender] = nonces[msg.sender] + 1;
 
-        // Append adminAddress and relayer address at the end to extract it from calling context
-        (bool success, bytes memory returnData) = address(this).call(abi.encodePacked(functionSignature, adminAddress));
+        // Append owner and relayer address at the end to extract it from calling context
+        (bool success, bytes memory returnData) = address(this).call(abi.encodePacked(functionSignature, owner()));
         string memory response = string(returnData);
         require(success, response);
-        emit MetaTransactionExecuted(adminAddress, msg.sender, functionSignature, returnData);
+        emit MetaTransactionExecuted(owner(), msg.sender, functionSignature, returnData);
         return returnData;
     }
 

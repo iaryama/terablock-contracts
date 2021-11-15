@@ -189,7 +189,7 @@ contract("MultiCoin", function (accounts) {
                     multi_coin_lock.releaseTokens(accounts[0], 100, "parentHash", {
                         from: accounts[1],
                     }),
-                    "Caller does not have Admin Access"
+                    "Ownable: caller is not the owner"
                 )
             })
             it("admins should release tokens for account", async () => {
@@ -200,13 +200,8 @@ contract("MultiCoin", function (accounts) {
                     return ev.amount == 100 && ev.user == accounts[0]
                 })
             })
-            it("Set Admin to the Lock Contract", async () => {
-                await truffleAssert.passes(multi_coin_lock.setAdmin(accounts[2], true))
-            })
             it("Provide Liquidity", async () => {
-                await truffleAssert.passes(
-                    multi_coin_parent.transfer(multi_coin_lock_address, 4000, { from: accounts[2] })
-                )
+                await truffleAssert.passes(multi_coin_parent.transfer(multi_coin_lock_address, 4000))
             })
             it("Release Tokens from the Lock Contract. Signed ReleaseTokens By Admin With Meta Tx Done by the User", async () => {
                 await multi_coin_parent.approve(multi_coin_lock_address, 100, {
@@ -236,7 +231,6 @@ contract("MultiCoin", function (accounts) {
                     [accounts[1], 100, "parentHashMeta"]
                 )
                 const metaTransaction = await multi_coin_lock.executeMetaTransaction(
-                    accounts[0],
                     functionSignature,
                     r,
                     s,
@@ -245,7 +239,7 @@ contract("MultiCoin", function (accounts) {
                 )
 
                 await truffleAssert.reverts(
-                    multi_coin_lock.executeMetaTransaction(accounts[1], functionSignature, r, s, v, {
+                    multi_coin_lock.executeMetaTransaction(functionSignature, r, s, v, {
                         from: accounts[1],
                     })
                 )
@@ -257,9 +251,7 @@ contract("MultiCoin", function (accounts) {
             })
             it("Remove Liquidity Provided by Liquidity Admin", async () => {
                 const poolLiquidity = await multi_coin_parent.balanceOf(multi_coin_lock_address)
-                await truffleAssert.passes(
-                    multi_coin_lock.removeLiquidity(poolLiquidity, { from: accounts[2] })
-                )
+                await truffleAssert.passes(multi_coin_lock.removeLiquidity(poolLiquidity))
             })
             it("withdraws any tokens from contract", async () => {
                 //mint

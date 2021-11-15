@@ -197,12 +197,11 @@ contract("TeraBlock Token", function (accounts) {
                 "burntHashMeta",
             ])
             await truffleAssert.reverts(
-                tera_block_bridge.executeMetaTransaction(accounts[0], functionSignature, r, s, v, {
+                tera_block_bridge.executeMetaTransaction(functionSignature, r, s, v, {
                     from: accounts[2],
                 })
             )
             const metaTransaction = await tera_block_bridge.executeMetaTransaction(
-                accounts[0],
                 functionSignature,
                 r,
                 s,
@@ -211,7 +210,7 @@ contract("TeraBlock Token", function (accounts) {
             )
 
             await truffleAssert.reverts(
-                tera_block_bridge.executeMetaTransaction(accounts[1], functionSignature, r, s, v, {
+                tera_block_bridge.executeMetaTransaction(functionSignature, r, s, v, {
                     from: accounts[1],
                 })
             )
