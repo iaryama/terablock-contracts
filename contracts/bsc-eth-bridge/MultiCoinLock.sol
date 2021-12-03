@@ -6,7 +6,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
-import "./utils/NativeMetaTransaction.sol";
+import "../utils/NativeMetaTransaction.sol";
 
 contract MultiCoinLock is NativeMetaTransaction, ReentrancyGuard {
     using SafeERC20 for IERC20;
