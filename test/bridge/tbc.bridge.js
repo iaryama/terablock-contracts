@@ -4,7 +4,8 @@ var TeraBlockBridge = artifacts.require("TeraBlockBridge")
 const truffleAssert = require("truffle-assertions")
 const web3Abi = require("web3-eth-abi")
 const sigUtil = require("@metamask/eth-sig-util")
-const DepositAdminPK = "65896b827386e22274ab391e5eb640fe57a841bf52597188740e6e0c49772e1e" // Deposit Admin is accounts[0]
+const DepositAdminPK = "feec0bcb2778f82159de2d5a270e896ac77580be878df76581cfd6572fe32f81" // Deposit Admin is accounts[0]
+
 const domainType = [
     {
         name: "name",
