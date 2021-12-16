@@ -17,8 +17,8 @@ contract SPSGameLock is ReentrancyGuard, AccessProtected, Pausable {
     struct Transaction {
         address user;
         uint256 amount;
-        string txId;
         string username;
+        string txId;
         bool processed;
     }
 
@@ -93,7 +93,13 @@ contract SPSGameLock is ReentrancyGuard, AccessProtected, Pausable {
         string memory _txId
     ) internal {
         require(!txMap[_txId].processed, "transaction id already processed");
-        Transaction memory transaction = Transaction(_user, _amount, _username, _txId, true);
+        Transaction memory transaction = Transaction({
+            user: _user,
+            amount: _amount,
+            username: _username,
+            txId: _txId,
+            processed: true
+        });
         txs.push(transaction);
         txMap[_txId] = transaction;
         uint256 index = playerTxCount[_username];
