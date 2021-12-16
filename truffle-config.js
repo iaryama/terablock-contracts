@@ -17,6 +17,7 @@ module.exports = {
                 }),
             network_id: "97",
             skipDryRun: true,
+            networkCheckTimeout: 20000,
         },
         bsc_mainnet: {
             provider: () =>
@@ -38,16 +39,16 @@ module.exports = {
             network_id: "1",
             skipDryRun: true,
         },
-        ropsten_testnet: {
+        rinkeby: {
             provider: () =>
                 new HDWalletProvider({
                     privateKeys: [process.env.PRIVATE_KEY],
-                    providerOrUrl: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+                    providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
                     addressIndex: 0,
                 }),
-            network_id: "3",
+            network_id: "4",
             skipDryRun: true,
-            networkCheckTimeout: 2000000,
+            networkCheckTimeout: 10000,
             timeoutBlocks: 200,
         },
     },
@@ -64,7 +65,7 @@ module.exports = {
     },
     plugins: ["truffle-plugin-verify"],
     api_keys: {
-        etherscan: process.env.ETHER_SCAN_API_KEY,
-        bscscan: process.env.BSC_SCAN_API_KEY,
+        etherscan: process.env.ETHERSCAN_API_KEY,
+        bscscan: process.env.BSCSCAN_API_KEY,
     },
 }

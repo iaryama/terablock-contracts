@@ -8,7 +8,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {AccessProtected} from "../utils/AccessProtected.sol";
 
-contract SPSGameLock is ReentrancyGuard, AccessProtected, Pausable {
+contract DECGameLock is ReentrancyGuard, AccessProtected, Pausable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
