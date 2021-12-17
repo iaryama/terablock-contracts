@@ -8,17 +8,18 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {AccessProtected} from "../utils/AccessProtected.sol";
 
-contract DECGameLock is ReentrancyGuard, AccessProtected, Pausable {
+contract SPSGameLock is ReentrancyGuard, AccessProtected, Pausable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
     IERC20 public immutable token;
+    uint256 public minAmount = 200 ether;
 
     struct Transaction {
         address user;
         uint256 amount;
-        string txId;
         string username;
+        string txId;
         bool processed;
     }
 
@@ -74,6 +75,10 @@ contract DECGameLock is ReentrancyGuard, AccessProtected, Pausable {
         _token.safeTransfer(owner(), _token.balanceOf(address(this)));
     }
 
+    function setMinAmount(uint256 _amount) public onlyAdmin {
+        minAmount = _amount;
+    }
+
     function getBalance() public view returns (uint256) {
         return token.balanceOf(address(this));
     }
@@ -93,7 +98,14 @@ contract DECGameLock is ReentrancyGuard, AccessProtected, Pausable {
         string memory _txId
     ) internal {
         require(!txMap[_txId].processed, "transaction id already processed");
-        Transaction memory transaction = Transaction(_user, _amount, _username, _txId, true);
+        require(_amount >= minAmount, "amount < minAmount");
+        Transaction memory transaction = Transaction({
+            user: _user,
+            amount: _amount,
+            username: _username,
+            txId: _txId,
+            processed: true
+        });
         txs.push(transaction);
         txMap[_txId] = transaction;
         uint256 index = playerTxCount[_username];

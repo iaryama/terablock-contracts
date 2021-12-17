@@ -13,6 +13,7 @@ contract SPSGameLock is ReentrancyGuard, AccessProtected, Pausable {
     using SafeERC20 for IERC20;
 
     IERC20 public immutable token;
+    uint256 public minAmount = 200 ether;
 
     struct Transaction {
         address user;
@@ -74,6 +75,10 @@ contract SPSGameLock is ReentrancyGuard, AccessProtected, Pausable {
         _token.safeTransfer(owner(), _token.balanceOf(address(this)));
     }
 
+    function setMinAmount(uint256 _amount) public onlyAdmin {
+        minAmount = _amount;
+    }
+
     function getBalance() public view returns (uint256) {
         return token.balanceOf(address(this));
     }
@@ -93,6 +98,7 @@ contract SPSGameLock is ReentrancyGuard, AccessProtected, Pausable {
         string memory _txId
     ) internal {
         require(!txMap[_txId].processed, "transaction id already processed");
+        require(_amount >= minAmount, "amount < minAmount");
         Transaction memory transaction = Transaction({
             user: _user,
             amount: _amount,
